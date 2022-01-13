@@ -1,2 +1,3 @@
-# dfat-terraform-lambda-api
-The Terraform module for DFAT Lambda APIs
+# terraform-aws-lambda-api
+
+The Terraform AWS module for DFAT Lambda APIs
