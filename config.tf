@@ -36,7 +36,7 @@ locals {
       duration = var.token_validity.refresh_token.duration
     }
   }
-  default_tags = marge({
+  default_tags = merge({
     Name      = local.app_name
     Domain    = local.app_domain_root
     Subdomain = local.app_domain
