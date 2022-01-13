@@ -8,6 +8,12 @@ variable "env" {
   description = "The deployment environment or stage. Use 'production' to eliminate environment prefixes and set the API Gateway Stage to production."
 }
 
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "The default tgs to assign the created resources."
+}
+
 variable "app_name" {
   type        = string
   description = "The app name"

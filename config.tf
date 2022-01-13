@@ -36,11 +36,11 @@ locals {
       duration = var.token_validity.refresh_token.duration
     }
   }
-  default_tags = {
+  default_tags = marge({
     Name      = local.app_name
     Domain    = local.app_domain_root
     Subdomain = local.app_domain
-  }
+  }, var.tags)
   data_table = {
     name     = "${local.app_slug}-${local.env_prefix}data"
     hash_key = "pk"
