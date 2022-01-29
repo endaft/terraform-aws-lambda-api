@@ -18,6 +18,6 @@ The variables are as strongly-typed as permitted by Terraform. You shouldn't nee
 | cognito_css_path | `string` |  | The path to a CSS file for Cognito. See schema comments for help. |
 | request_params | `map(string)` | `{}` | The request parameter mapping for the lambda integration. |
 | identity_providers | `list(object(...))` | `[]` | The user pool identity providers to be connected. |
-| token_validity | `object(...)` | `id_token: 30 days`, `access_token: 1 hour`, `refresh_token: 1 hour` | The token validity durations used by the user pool. |
-| password_rules | `object(...)` | `minimum_length = 10`, `require_lowercase = true`, `require_numbers = true`, `require_symbols = true`, `require_uppercase = true` | The password complexity rules used by the user pool during sign up. |
+| token_validity | `object(...)` | `id_token: 30 days`,<br />`access_token: 1 hour`,<br />`refresh_token: 1 hour` | The token validity durations used by the user pool. |
+| password_rules | `object(...)` | `minimum_length: 10`,<br />`require_lowercase: true`,<br />`require_numbers: true`,<br />`require_symbols: true`,<br />`require_uppercase: true`<br /> | The password complexity rules used by the user pool during sign up. |
 | lambda_configs | `map(object(...))` |  | A map of name-keyed maps of lambda configurations. |
