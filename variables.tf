@@ -33,7 +33,7 @@ variable "log_retention_days" {
 variable "local_dev_endpoint" {
   type        = string
   default     = "http://localhost:19006"
-  description = "The local development server endpoint, like http://localhost:19006. Defaults to: http://localhost:19006"
+  description = "The local development server endpoint, like http://localhost:19006. Used for CORS access. Defaults to: http://localhost:19006"
 }
 
 variable "cognito_logo_path" {
@@ -92,7 +92,7 @@ variable "token_validity" {
       units    = "hours"
     }
   }
-  description = "The password complexity rules used by the user pool."
+  description = "The token validity durations used by the user pool."
 }
 
 variable "password_rules" {
@@ -110,7 +110,7 @@ variable "password_rules" {
     require_symbols   = true
     require_uppercase = true
   }
-  description = "The password complexity rules used by the user pool."
+  description = "The password complexity rules used by the user pool during sign up."
 }
 
 variable "lambda_configs" {
@@ -128,5 +128,5 @@ variable "lambda_configs" {
       path   = string
     }))
   }))
-  description = "A map of name-keyed map of lambda configurations."
+  description = "A map of name-keyed maps of lambda configurations."
 }
