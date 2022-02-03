@@ -5,7 +5,6 @@
 resource "aws_s3_bucket" "app" {
   bucket = local.web_app_domain
   acl    = "private"
-  tags   = local.default_tags
 
   versioning {
     enabled = true
