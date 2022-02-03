@@ -4,8 +4,8 @@
 resource "aws_cognito_user_pool_ui_customization" "app" {
   count = local.is_anon ? 0 : 1
 
-  client_id    = aws_cognito_user_pool_client.app.id
-  user_pool_id = aws_cognito_user_pool_domain.app.user_pool_id
+  client_id    = aws_cognito_user_pool_client.app[0].id
+  user_pool_id = aws_cognito_user_pool_domain.app[0].user_pool_id
 
   css        = file(var.cognito_css_path)
   image_file = filebase64(var.cognito_logo_path)

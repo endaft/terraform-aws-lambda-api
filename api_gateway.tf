@@ -87,7 +87,7 @@ resource "aws_apigatewayv2_authorizer" "app" {
 
   jwt_configuration {
     audience = ["public"]
-    issuer   = "https://${aws_cognito_user_pool.app.endpoint}"
+    issuer   = "https://${aws_cognito_user_pool.app[0].endpoint}"
   }
 }
 

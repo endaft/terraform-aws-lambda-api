@@ -25,11 +25,11 @@ resource "aws_route53_record" "auth" {
 
   type    = "A"
   zone_id = data.aws_route53_zone.public.zone_id
-  name    = aws_cognito_user_pool_domain.app.domain
+  name    = aws_cognito_user_pool_domain.app[0].domain
 
   alias {
     zone_id                = "Z2FDTNDATAQYW2" # This zone_id is static for Cognito
-    name                   = aws_cognito_user_pool_domain.app.cloudfront_distribution_arn
+    name                   = aws_cognito_user_pool_domain.app[0].cloudfront_distribution_arn
     evaluate_target_health = false
   }
 }
