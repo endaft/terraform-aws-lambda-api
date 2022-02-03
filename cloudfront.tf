@@ -7,11 +7,12 @@ resource "aws_cloudfront_origin_access_identity" "app" {
 }
 
 resource "aws_cloudfront_distribution" "app" {
-  enabled         = true
-  is_ipv6_enabled = true
-  comment         = "The public access point for ${local.web_app_domain}"
-  price_class     = "PriceClass_All"
-  aliases         = [local.app_domain, local.web_app_domain]
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = "index.html"
+  price_class         = "PriceClass_All"
+  comment             = "The public access point for ${local.web_app_domain}"
+  aliases             = [local.app_domain, local.web_app_domain]
 
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
