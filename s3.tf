@@ -5,7 +5,9 @@
 resource "aws_s3_bucket" "app" {
   bucket = local.web_app_domain
   acl    = "private"
-
+  website {
+    index_document = "index.html"
+  }
   versioning {
     enabled = true
   }
