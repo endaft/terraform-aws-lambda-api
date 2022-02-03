@@ -4,6 +4,7 @@
 
 locals {
   env             = var.env
+  is_anon         = var.anonymous
   is_prod         = (local.env == "prod" || local.env == "production")
   use_subdom      = !local.is_prod
   env_prefix      = (local.is_prod ? "" : "${var.env}-")
@@ -21,6 +22,7 @@ locals {
   cert_sans       = ["${local.app_domain}", local.api_domain, local.web_app_domain, local.auth_domain, "*.${local.app_domain}"]
   s3w_origin_id   = "origin-${local.app_slug}"
   lambda_archs    = ["arm64"]
+  idps            = local.is_anon ? var.identity_providers : []
   cognito = {
     user_pool_name  = "${local.app_slug}-${local.env_prefix}users"
     authorizer_name = "${local.app_slug}-${local.env_prefix}authorizer"

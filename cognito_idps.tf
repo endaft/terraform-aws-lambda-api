@@ -11,7 +11,7 @@ locals {
 }
 
 resource "aws_cognito_identity_provider" "app" {
-  for_each = { for idp in var.identity_providers : idp.name => idp }
+  for_each = { for idp in local.idps : idp.name => idp }
 
   user_pool_id  = aws_cognito_user_pool.app.id
   provider_name = each.key

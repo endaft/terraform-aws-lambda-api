@@ -21,6 +21,8 @@ resource "aws_route53_record" "sub" {
 }
 
 resource "aws_route53_record" "auth" {
+  count = local.is_anon ? 0 : 1
+
   type    = "A"
   zone_id = data.aws_route53_zone.public.zone_id
   name    = aws_cognito_user_pool_domain.app.domain

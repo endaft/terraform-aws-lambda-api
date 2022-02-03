@@ -78,6 +78,8 @@ resource "aws_apigatewayv2_integration" "app" {
 }
 
 resource "aws_apigatewayv2_authorizer" "app" {
+  count = local.is_anon ? 0 : 1
+
   api_id           = aws_apigatewayv2_api.app.id
   authorizer_type  = "JWT"
   identity_sources = ["$request.header.Authorization"]
@@ -96,8 +98,8 @@ resource "aws_apigatewayv2_route" "app" {
   route_key = "${each.value.method} ${each.value.path}"
   target    = "integrations/${aws_apigatewayv2_integration.app[each.value.lambda].id}"
 
-  authorizer_id      = (each.value.anon ? null : aws_apigatewayv2_authorizer.app.id)
-  authorization_type = each.value.auth
+  authorizer_id      = ((local.is_anon || each.value.anon) ? null : aws_apigatewayv2_authorizer.app.id)
+  authorization_type = ((local.is_anon || each.value.anon) ? null : each.value.auth)
 
   depends_on = [
     aws_apigatewayv2_integration.app

@@ -2,6 +2,8 @@
 # AWS Cognito - User Pool & Authentication
 #################################################
 resource "aws_cognito_user_pool_ui_customization" "app" {
+  count = local.is_anon ? 0 : 1
+
   client_id    = aws_cognito_user_pool_client.app.id
   user_pool_id = aws_cognito_user_pool_domain.app.user_pool_id
 
@@ -11,6 +13,8 @@ resource "aws_cognito_user_pool_ui_customization" "app" {
 }
 
 resource "aws_cognito_user_pool_client" "app" {
+  count = local.is_anon ? 0 : 1
+
   name         = "${local.cognito.user_pool_name}-client"
   user_pool_id = aws_cognito_user_pool.app.id
 
@@ -45,12 +49,16 @@ resource "aws_cognito_user_pool_client" "app" {
 }
 
 resource "aws_cognito_user_pool_domain" "app" {
+  count = local.is_anon ? 0 : 1
+
   domain          = local.auth_domain
   certificate_arn = aws_acm_certificate.app.arn
   user_pool_id    = aws_cognito_user_pool.app.id
 }
 
 resource "aws_cognito_user_pool" "app" {
+  count = local.is_anon ? 0 : 1
+
   name                     = local.cognito.user_pool_name
   alias_attributes         = ["phone_number", "email", "preferred_username"]
   auto_verified_attributes = ["email"]

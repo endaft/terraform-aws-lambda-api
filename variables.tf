@@ -41,13 +41,21 @@ variable "local_dev_endpoint" {
   description = "The local development server endpoint, like http://localhost:19006. Used for CORS access. Defaults to: http://localhost:19006"
 }
 
+variable "anonymous" {
+  type        = bool
+  default     = false
+  description = "Ultimately, controls the Cognito deployment. Set this to `true` skip deploying Cognito."
+}
+
 variable "cognito_logo_path" {
   type        = string
+  default     = ""
   description = "The path to a logo file for Cognito. Ideally, 350px wide. MUST not exceed 100kb."
 }
 
 variable "cognito_css_path" {
   type        = string
+  default     = ""
   description = "The path to a CSS file for Cognito. See schema comments for help."
 }
 
