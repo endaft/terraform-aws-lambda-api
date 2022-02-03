@@ -98,7 +98,7 @@ resource "aws_apigatewayv2_route" "app" {
   route_key = "${each.value.method} ${each.value.path}"
   target    = "integrations/${aws_apigatewayv2_integration.app[each.value.lambda].id}"
 
-  authorizer_id      = ((local.is_anon || each.value.anon) ? null : aws_apigatewayv2_authorizer.app.id)
+  authorizer_id      = ((local.is_anon || each.value.anon) ? null : aws_apigatewayv2_authorizer.app[0].id)
   authorization_type = ((local.is_anon || each.value.anon) ? null : each.value.auth)
 
   depends_on = [

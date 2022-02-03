@@ -16,7 +16,7 @@ resource "aws_cognito_user_pool_client" "app" {
   count = local.is_anon ? 0 : 1
 
   name         = "${local.cognito.user_pool_name}-client"
-  user_pool_id = aws_cognito_user_pool.app.id
+  user_pool_id = aws_cognito_user_pool.app[0].id
 
   # Default redirect * MUST * be in the callbacks
   default_redirect_uri = "https://${local.app_domain}"
@@ -53,7 +53,7 @@ resource "aws_cognito_user_pool_domain" "app" {
 
   domain          = local.auth_domain
   certificate_arn = aws_acm_certificate.app.arn
-  user_pool_id    = aws_cognito_user_pool.app.id
+  user_pool_id    = aws_cognito_user_pool.app[0].id
 }
 
 resource "aws_cognito_user_pool" "app" {
