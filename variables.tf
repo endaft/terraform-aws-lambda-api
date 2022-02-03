@@ -24,6 +24,11 @@ variable "app_domain" {
   description = "The app domain name"
 }
 
+variable "web_app_path" {
+  type        = string
+  description = "The local path to the web app deployment files. For a Flutter app called 'app' this might be 'app/build/web'."
+}
+
 variable "log_retention_days" {
   type        = number
   default     = 14
