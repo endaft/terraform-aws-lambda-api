@@ -9,13 +9,17 @@ data "aws_route53_zone" "public" {
 resource "aws_route53_record" "sub" {
   count = local.use_subdom ? 1 : 0
 
-  type    = "A"
-  ttl     = "300"
-  zone_id = data.aws_route53_zone.public.zone_id
-  name    = local.app_domain
-  records = ["10.1.1.1"]
-
+  type            = "A"
+  ttl             = "300"
+  zone_id         = data.aws_route53_zone.public.zone_id
+  name            = local.app_domain
   allow_overwrite = true
+
+  alias {
+    zone_id                = aws_cloudfront_distribution.app.hosted_zone_id
+    name                   = aws_cloudfront_distribution.app.domain_name
+    evaluate_target_health = false
+  }
 }
 
 resource "aws_route53_record" "auth" {
@@ -36,8 +40,8 @@ resource "aws_route53_record" "api" {
   name    = aws_apigatewayv2_domain_name.app.domain_name
 
   alias {
-    name                   = aws_apigatewayv2_domain_name.app.domain_name_configuration[0].target_domain_name
     zone_id                = aws_apigatewayv2_domain_name.app.domain_name_configuration[0].hosted_zone_id
+    name                   = aws_apigatewayv2_domain_name.app.domain_name_configuration[0].target_domain_name
     evaluate_target_health = false
   }
 }
