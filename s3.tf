@@ -30,8 +30,20 @@ data "aws_iam_policy_document" "s3_app_policy_doc" {
   version = "2008-10-17"
 
   statement {
-    sid       = "AllowPublicRead"
     effect    = "Allow"
+    sid       = "AllowPublicVisible"
+    actions   = ["s3:ListBucket"]
+    resources = [aws_s3_bucket.app.arn]
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_cloudfront_origin_access_identity.app.iam_arn]
+    }
+  }
+
+  statement {
+    effect    = "Allow"
+    sid       = "AllowPublicRead"
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.app.arn}/*"]
 
