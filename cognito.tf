@@ -7,9 +7,8 @@ resource "aws_cognito_user_pool_ui_customization" "app" {
   client_id    = aws_cognito_user_pool_client.app[0].id
   user_pool_id = aws_cognito_user_pool_domain.app[0].user_pool_id
 
-  css        = local.is_anon ? null : file(var.cognito_css_path)
-  image_file = local.is_anon ? null : filebase64(var.cognito_logo_path)
-
+  css        = file(local.is_anon ? "${path.module}/empty.file" : var.cognito_css_path)
+  image_file = filebase64(local.is_anon ? "${path.module}/empty.file" : var.cognito_logo_path)
 }
 
 resource "aws_cognito_user_pool_client" "app" {
