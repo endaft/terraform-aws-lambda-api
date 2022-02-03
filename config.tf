@@ -74,8 +74,8 @@ locals {
       ])
     ) : obj.key => obj
   }
-  lambda_routes_anon = [for key in compact([for k,l in local.lambda_routes : l.anon ? k : ""]) : lookup(local.lambda_routes, key)]
-  lambda_routes_auth = [for key in compact([for k,l in local.lambda_routes : !l.anon ? k : ""]) : lookup(local.lambda_routes, key)]
+  lambda_routes_anon = { for key in compact([for k, l in local.lambda_routes : l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
+  lambda_routes_auth = { for key in compact([for k, l in local.lambda_routes : !l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
   token_map = {
     "$DATA_TABLE_NAME" = local.data_table.name
   }
