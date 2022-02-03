@@ -10,10 +10,8 @@ resource "aws_route53_record" "sub" {
   count = local.use_subdom ? 1 : 0
 
   type            = "A"
-  ttl             = "300"
   zone_id         = data.aws_route53_zone.public.zone_id
   name            = local.app_domain
-  allow_overwrite = true
 
   alias {
     zone_id                = aws_cloudfront_distribution.app.hosted_zone_id
