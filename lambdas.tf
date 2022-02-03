@@ -1,5 +1,5 @@
 #################################################
-# AWS Lambda - Basic FUnction Template
+# AWS Lambda - Basic Function Template
 #################################################
 
 resource "aws_lambda_function" "handler" {
