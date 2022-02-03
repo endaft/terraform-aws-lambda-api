@@ -91,19 +91,23 @@ resource "aws_apigatewayv2_authorizer" "app" {
   }
 }
 
-resource "aws_apigatewayv2_route" "app" {
-  for_each = local.lambda_routes
+resource "aws_apigatewayv2_route" "app_auth" {
+  for_each = local.lambda_routes_auth
 
   api_id    = aws_apigatewayv2_api.app.id
   route_key = "${each.value.method} ${each.value.path}"
   target    = "integrations/${aws_apigatewayv2_integration.app[each.value.lambda].id}"
 
-  authorizer_id      = ((local.is_anon || each.value.anon) ? null : aws_apigatewayv2_authorizer.app[0].id)
-  authorization_type = ((local.is_anon || each.value.anon) ? null : each.value.auth)
+  authorizer_id      = aws_apigatewayv2_authorizer.app[0].id
+  authorization_type = each.value.auth
+}
 
-  depends_on = [
-    aws_apigatewayv2_integration.app
-  ]
+resource "aws_apigatewayv2_route" "app_anon" {
+  for_each = local.lambda_routes_anon
+
+  api_id    = aws_apigatewayv2_api.app.id
+  route_key = "${each.value.method} ${each.value.path}"
+  target    = "integrations/${aws_apigatewayv2_integration.app[each.value.lambda].id}"
 }
 
 resource "aws_lambda_permission" "app" {
