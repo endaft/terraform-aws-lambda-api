@@ -7,7 +7,6 @@ resource "aws_iam_role" "lambda_exec_role" {
   assume_role_policy = data.aws_iam_policy_document.lambda_arp_doc.json
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/AWSLambdaExecute",
-    "arn:aws:iam::aws:policy/AmazonDynamoDBFullAccess",
   ]
 }
 
