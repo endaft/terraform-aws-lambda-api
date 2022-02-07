@@ -22,3 +22,12 @@ The variables are as strongly-typed as permitted by Terraform. You shouldn't nee
 | token_validity | `object(...)` | `id_token: 30 days`,<br />`access_token: 1 hour`,<br />`refresh_token: 1 hour` | The token validity durations used by the user pool. |
 | password_rules | `object(...)` | `minimum_length: 10`,<br />`require_lowercase: true`,<br />`require_numbers: true`,<br />`require_symbols: true`,<br />`require_uppercase: true`<br /> | The password complexity rules used by the user pool during sign up. |
 | lambda_configs | `map(object(...))` |  | A map of name-keyed maps of lambda configurations. |
+
+## Outputs
+
+These values are output from the deployment for use in deployment customization.
+
+| Name | Type | Description |
+| --- | --- | --- |
+| lambda_exec_role_arn | `string` | The Lambda Execution Role ARN. Useful for granting additional permission like data access. |
+| lambda_exec_role_id | `string` | The Lambda Execution Role ID (role name). Useful for granting additional permission like data access. |
