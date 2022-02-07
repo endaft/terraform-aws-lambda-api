@@ -89,24 +89,6 @@ resource "aws_cognito_user_pool" "app" {
   }
 
   schema {
-    name                = "nickname"
-    attribute_data_type = "String"
-    required            = true
-  }
-
-  schema {
-    name                = "given_name"
-    attribute_data_type = "String"
-    required            = true
-  }
-
-  schema {
-    name                = "family_name"
-    attribute_data_type = "String"
-    required            = true
-  }
-
-  schema {
     name                = "email"
     attribute_data_type = "String"
     required            = true
@@ -114,36 +96,6 @@ resource "aws_cognito_user_pool" "app" {
 
   schema {
     name                = "phone_number"
-    attribute_data_type = "String"
-    required            = true
-  }
-
-  schema {
-    name                = "birthdate"
-    attribute_data_type = "String"
-    required            = true
-  }
-
-  schema {
-    name                = "zoneinfo"
-    attribute_data_type = "String"
-    required            = true
-  }
-
-  schema {
-    name                = "locale"
-    attribute_data_type = "String"
-    required            = true
-  }
-
-  schema {
-    name                = "picture"
-    attribute_data_type = "String"
-    required            = false
-  }
-
-  schema {
-    name                = "address"
     attribute_data_type = "String"
     required            = true
   }
