@@ -65,6 +65,12 @@ variable "request_params" {
   description = "The request parameter mapping for the lambda integration."
 }
 
+variable "token_map" {
+  type        = map(string)
+  default     = {}
+  description = "The token mapping for the lambda environment variable integration."
+}
+
 variable "identity_providers" {
   type = list(object({
     name    = string

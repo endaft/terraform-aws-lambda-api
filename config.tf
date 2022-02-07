@@ -45,11 +45,6 @@ locals {
     Domain    = local.app_domain_root
     Subdomain = local.app_domain
   }, var.tags)
-  data_table = {
-    name     = "${local.app_slug}-${local.env_prefix}data"
-    hash_key = "pk"
-    sort_key = "sk"
-  }
   api_gateway = {
     name        = "${local.app_slug}-${local.env_prefix}api"
     stage       = var.env
@@ -76,10 +71,8 @@ locals {
   }
   lambda_routes_anon = { for key in compact([for k, l in local.lambda_routes : l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
   lambda_routes_auth = { for key in compact([for k, l in local.lambda_routes : !l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
-  token_map = {
-    "$DATA_TABLE_NAME" = local.data_table.name
-  }
-  token_keys = keys(local.token_map)
+  token_map          = var.token_map
+  token_keys         = keys(local.token_map)
   mime_map = {
     "aac"    = "audio/aac"
     "abw"    = "application/x-abiword"
