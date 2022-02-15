@@ -135,14 +135,16 @@ variable "password_rules" {
 
 variable "lambda_configs" {
   type = map(object({
-    runtime     = string,
-    memory      = number,
-    timeout     = number,
-    file        = string,
-    handler     = string,
-    description = string,
-    anonymous   = bool,
-    environment = map(string),
+    runtime          = string,
+    memory           = number,
+    timeout          = number,
+    file             = string,
+    handler          = string,
+    description      = string,
+    architecture     = string,
+    anonymous        = bool,
+    environment      = map(string),
+    cloudfront_event = string,
     routes = set(object({
       method = string,
       path   = string

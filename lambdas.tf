@@ -11,9 +11,9 @@ resource "aws_lambda_function" "handler" {
   timeout          = each.value.timeout
   filename         = each.value.file
   handler          = each.value.handler
+  architectures    = [each.value.architecture]
   function_name    = "${local.env_prefix}${each.key}"
   source_code_hash = filebase64sha256(each.value.file)
-  architectures    = local.lambda_archs
 
   dynamic "environment" {
     for_each = (each.value.environment == null ? [] : [each.value.environment])

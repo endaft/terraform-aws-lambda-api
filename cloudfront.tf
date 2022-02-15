@@ -39,6 +39,15 @@ resource "aws_cloudfront_distribution" "app" {
         forward = "none"
       }
     }
+
+    dynamic "lambda_function_association" {
+      for_each = local.lambdas_cloudfront
+      content {
+        event_type   = lambda_function_association.value.cloudfront_event
+        lambda_arn   = aws_lambda_function.handler[lambda_function_association.key].qualified_arn
+        include_body = true
+      }
+    }
   }
 
   restrictions {

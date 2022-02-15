@@ -21,7 +21,6 @@ locals {
   web_apps        = var.web_apps
   cert_sans       = ["${local.app_domain}", local.api_domain, local.web_app_domain, local.auth_domain, "*.${local.app_domain}"]
   s3w_origin_id   = "origin-${local.app_slug}"
-  lambda_archs    = ["arm64"]
   idps            = local.is_anon ? var.identity_providers : []
   cognito = {
     user_pool_name  = "${local.app_slug}-${local.env_prefix}users"
@@ -51,10 +50,9 @@ locals {
     description = "The ${local.app_name} API Gateway."
   }
   roles = {
-    lambda_exec    = "${local.app_slug}-${local.env_prefix}lambda-exec"
-    billing_access = "${local.app_slug}-${local.env_prefix}lambda-billing"
+    lambda_exec = "${local.app_slug}-${local.env_prefix}lambda-exec"
   }
-  idp_names      = [for idp in var.identity_providers : idp.name]
+  idp_names = [for idp in var.identity_providers : idp.name]
   web_apps_files = { for obj in tolist(flatten([for app, dirPath in local.web_apps :
     tolist([for f in fileset(dirPath, "**") : {
       target = "${app}/${f}"
@@ -75,6 +73,8 @@ locals {
       ])
     ) : obj.key => obj
   }
+  lambdas_cloudfront = { for key in compact([for k, l in var.lambda_configs : l.cloudfront_event != "" ? k : ""]) : key => lookup(var.lambda_configs, key) }
+  lambda_endpoints   = { for key in compact([for k, l in var.lambda_configs : length(l.routes) > 0 ? k : ""]) : key => lookup(var.lambda_configs, key) }
   lambda_routes_anon = { for key in compact([for k, l in local.lambda_routes : l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
   lambda_routes_auth = { for key in compact([for k, l in local.lambda_routes : !l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
   token_map          = var.token_map

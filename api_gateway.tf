@@ -63,8 +63,7 @@ resource "aws_apigatewayv2_api_mapping" "app" {
 }
 
 resource "aws_apigatewayv2_integration" "app" {
-  for_each = var.lambda_configs
-
+  for_each           = local.lambda_endpoints
   api_id             = aws_apigatewayv2_api.app.id
   integration_uri    = aws_lambda_function.handler[each.key].invoke_arn
   integration_type   = "AWS_PROXY"
@@ -78,8 +77,7 @@ resource "aws_apigatewayv2_integration" "app" {
 }
 
 resource "aws_apigatewayv2_authorizer" "app" {
-  count = local.is_anon ? 0 : 1
-
+  count            = local.is_anon ? 0 : 1
   api_id           = aws_apigatewayv2_api.app.id
   authorizer_type  = "JWT"
   identity_sources = ["$request.header.Authorization"]
@@ -111,7 +109,7 @@ resource "aws_apigatewayv2_route" "app_anon" {
 }
 
 resource "aws_lambda_permission" "app" {
-  for_each = var.lambda_configs
+  for_each = local.lambda_endpoints
 
   action        = "lambda:InvokeFunction"
   principal     = "apigateway.amazonaws.com"
