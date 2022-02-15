@@ -18,7 +18,7 @@ locals {
   api_domain      = "api.${local.app_domain}"
   auth_domain     = "id.${local.app_domain}"
   web_app_domain  = "app.${local.app_domain}"
-  web_app_path    = var.web_app_path
+  web_apps        = var.web_apps
   cert_sans       = ["${local.app_domain}", local.api_domain, local.web_app_domain, local.auth_domain, "*.${local.app_domain}"]
   s3w_origin_id   = "origin-${local.app_slug}"
   lambda_archs    = ["arm64"]
@@ -54,7 +54,8 @@ locals {
     lambda_exec    = "${local.app_slug}-${local.env_prefix}lambda-exec"
     billing_access = "${local.app_slug}-${local.env_prefix}lambda-billing"
   }
-  idp_names = [for idp in var.identity_providers : idp.name]
+  idp_names      = [for idp in var.identity_providers : idp.name]
+  web_apps_files = flatten([for app, path in local.web_apps : [for f in fileset(path, "**") : "${app}/${f}"]])
   lambda_routes = { for obj in
     flatten(
       flatten([for key, lambda in var.lambda_configs :

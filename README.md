@@ -12,7 +12,7 @@ The variables are as strongly-typed as permitted by Terraform. You shouldn't nee
 | tags | `map(string)` | `{}` | The default tgs to assign the created resources. |
 | app_name | `string` |  | The app name |
 | app_domain | `string` |  | The app domain name |
-| web_app_path | `string` |  | The local path to the web app deployment files. For a Flutter app called 'app' this might be 'app/build/web'. |
+| web_apps | `map(string)` | `{}` | The mapping of sub-domains (key) to bucket resource paths (value). |
 | log_retention_days | `number` | `14` | The number of days to retain log files. |
 | local_dev_endpoint | `string` | `"http://localhost:19006"` | The local development server endpoint, like http://localhost:19006. Used for CORS access. |
 | cognito_logo_path | `string` |  | The path to a logo file for Cognito. Ideally, 350px wide. MUST not exceed 100kb. |

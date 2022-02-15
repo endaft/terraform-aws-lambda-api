@@ -14,12 +14,12 @@ resource "aws_s3_bucket" "app" {
 }
 
 resource "aws_s3_bucket_object" "app_files" {
-  for_each = fileset(local.web_app_path, "**")
+  for_each = local.web_apps_files
 
   key          = each.value
+  source       = each.value
+  etag         = filemd5(each.value)
   bucket       = aws_s3_bucket.app.bucket
-  source       = "${local.web_app_path}/${each.value}"
-  etag         = filemd5("${local.web_app_path}/${each.value}")
   content_type = lookup(local.mime_map, reverse(split(".", each.value))[0], "application/octet-stream")
 }
 

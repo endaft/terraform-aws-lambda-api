@@ -24,11 +24,6 @@ variable "app_domain" {
   description = "The app domain name"
 }
 
-variable "web_app_path" {
-  type        = string
-  description = "The local path to the web app deployment files. For a Flutter app called 'app' this might be 'app/build/web'."
-}
-
 variable "log_retention_days" {
   type        = number
   default     = 14
@@ -69,6 +64,12 @@ variable "token_map" {
   type        = map(string)
   default     = {}
   description = "The token mapping for the lambda environment variable integration."
+}
+
+variable "web_apps" {
+  type        = map(string)
+  default     = {}
+  description = "The mapping of sub-domains (key) to bucket resource paths (value)."
 }
 
 variable "identity_providers" {
