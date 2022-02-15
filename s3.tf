@@ -14,9 +14,8 @@ resource "aws_s3_bucket" "app" {
 }
 
 resource "aws_s3_bucket_object" "app_files" {
-  for_each = local.web_apps_files
-
-  key          = each.value
+  for_each     = local.web_apps_files
+  key          = each.key
   source       = each.value
   etag         = filemd5(each.value)
   bucket       = aws_s3_bucket.app.bucket

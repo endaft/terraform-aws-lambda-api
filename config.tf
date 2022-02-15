@@ -55,7 +55,12 @@ locals {
     billing_access = "${local.app_slug}-${local.env_prefix}lambda-billing"
   }
   idp_names      = [for idp in var.identity_providers : idp.name]
-  web_apps_files = flatten([for app, path in local.web_apps : [for f in fileset(path, "**") : "${app}/${f}"]])
+  web_apps_files = { for obj in tolist(flatten([for app, dirPath in local.web_apps :
+    tolist([for f in fileset(dirPath, "**") : {
+      target = "${app}/${f}"
+      source = "${dirPath}/${f}"
+    }])
+  ])) : obj.target => obj.source }
   lambda_routes = { for obj in
     flatten(
       flatten([for key, lambda in var.lambda_configs :
