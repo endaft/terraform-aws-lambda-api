@@ -4,12 +4,27 @@
 
 resource "aws_s3_bucket" "app" {
   bucket = local.web_app_domain
-  acl    = "private"
-  website {
-    index_document = "index.html"
-  }
   versioning {
     enabled = true
+  }
+}
+
+resource "aws_s3_bucket_versioning" "versioning_example" {
+  bucket = aws_s3_bucket.app.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_website_configuration" "example" {
+  bucket = aws_s3_bucket.app.bucket
+
+  index_document {
+    suffix = "index.html"
+  }
+
+  error_document {
+    key = "error.html"
   }
 }
 
