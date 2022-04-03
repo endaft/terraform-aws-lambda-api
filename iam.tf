@@ -7,6 +7,9 @@ resource "aws_iam_role" "lambda_exec_role" {
   assume_role_policy = data.aws_iam_policy_document.lambda_arp_doc.json
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/AWSLambdaExecute",
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+    "arn:aws:iam::aws:policy/CloudWatchEventsFullAccess",
+    "arn:aws:iam::aws:policy/CloudFrontFullAccess",
   ]
 }
 
@@ -18,8 +21,13 @@ data "aws_iam_policy_document" "lambda_arp_doc" {
     actions = ["sts:AssumeRole"]
 
     principals {
-      type        = "Service"
-      identifiers = ["lambda.amazonaws.com", "edgelambda.amazonaws.com"]
+      type = "Service"
+      identifiers = [
+        "lambda.amazonaws.com",
+        "edgelambda.amazonaws.com",
+        "events.amazonaws.com",
+        "s3.amazonaws.com",
+      ]
     }
   }
 }
