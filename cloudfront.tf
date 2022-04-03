@@ -14,6 +14,12 @@ resource "aws_cloudfront_distribution" "app" {
   comment             = "The public access point for ${local.web_app_domain}"
   aliases             = [local.app_domain, local.web_app_domain]
 
+   logging_config {
+    include_cookies = false
+    bucket          = "${aws_s3_bucket.app.bucket}.s3.amazonaws.com"
+    prefix          = "logs"
+  }
+
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
     origin_id   = local.s3w_origin_id
@@ -57,7 +63,7 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   viewer_certificate {
-    minimum_protocol_version = "TLSv1.2_2019"
+    minimum_protocol_version = "TLSv1.2_2021"
     ssl_support_method       = "sni-only"
     acm_certificate_arn      = aws_acm_certificate.app.arn
   }
