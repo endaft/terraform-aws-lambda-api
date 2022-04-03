@@ -6,14 +6,19 @@ resource "aws_s3_bucket" "app" {
   bucket = local.web_app_domain
 }
 
-resource "aws_s3_bucket_versioning" "versioning_example" {
+resource "aws_s3_bucket_acl" "app" {
+  bucket = aws_s3_bucket.app.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "app" {
   bucket = aws_s3_bucket.app.id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
-resource "aws_s3_bucket_website_configuration" "example" {
+resource "aws_s3_bucket_website_configuration" "app" {
   bucket = aws_s3_bucket.app.bucket
 
   index_document {
@@ -25,7 +30,7 @@ resource "aws_s3_bucket_website_configuration" "example" {
   }
 }
 
-resource "aws_s3_bucket_object" "app_files" {
+resource "aws_s3_object" "app_files" {
   for_each     = local.web_apps_files
   key          = each.key
   source       = each.value
