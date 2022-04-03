@@ -4,9 +4,6 @@
 
 resource "aws_s3_bucket" "app" {
   bucket = local.web_app_domain
-  versioning {
-    enabled = true
-  }
 }
 
 resource "aws_s3_bucket_versioning" "versioning_example" {
