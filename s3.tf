@@ -3,7 +3,7 @@
 #################################################
 
 resource "aws_s3_bucket" "app" {
-  bucket = local.web_app_domain
+  bucket = local.app_domain
 }
 
 resource "aws_s3_bucket_acl" "app" {
