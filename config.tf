@@ -20,7 +20,7 @@ locals {
   web_app_domain  = "app.${local.app_domain}"
   web_apps        = var.web_apps
   cert_sans       = ["${local.app_domain}", local.api_domain, local.web_app_domain, local.auth_domain, "*.${local.app_domain}"]
-  s3w_origin_id   = "origin-${local.app_slug}"
+  s3w_origin_id   = "${local.app_slug}-${env_prefix}origin"
   idps            = local.is_anon ? var.identity_providers : []
   cognito = {
     user_pool_name  = "${local.app_slug}-${local.env_prefix}users"
