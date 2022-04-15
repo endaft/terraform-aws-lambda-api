@@ -11,13 +11,6 @@ resource "aws_s3_bucket_acl" "app" {
   acl    = "private"
 }
 
-resource "aws_s3_bucket_versioning" "app" {
-  bucket = aws_s3_bucket.app.id
-  versioning_configuration {
-    status = "Enabled"
-  }
-}
-
 resource "aws_s3_bucket_website_configuration" "app" {
   bucket = aws_s3_bucket.app.bucket
 
