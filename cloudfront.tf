@@ -34,8 +34,8 @@ resource "aws_cloudfront_distribution" "app" {
     cached_methods         = ["GET", "HEAD"]
     target_origin_id       = local.s3w_origin_id
     viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 0
-    default_ttl            = 3600
+    min_ttl                = 3600
+    default_ttl            = 7200
     max_ttl                = 86400
 
     forwarded_values {
