@@ -14,7 +14,7 @@ resource "aws_cloudfront_distribution" "app" {
   comment             = "The public access point for ${local.web_app_domain}"
   aliases             = [local.app_domain, local.web_app_domain]
 
-   logging_config {
+  logging_config {
     include_cookies = false
     bucket          = "${aws_s3_bucket.app.bucket}.s3.amazonaws.com"
     prefix          = "logs"
@@ -23,6 +23,10 @@ resource "aws_cloudfront_distribution" "app" {
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
     origin_id   = local.s3w_origin_id
+    custom_header {
+      name  = "X-Base-Host"
+      value = local.app_domain
+    }
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.app.cloudfront_access_identity_path
@@ -40,17 +44,20 @@ resource "aws_cloudfront_distribution" "app" {
 
     forwarded_values {
       query_string = false
+      headers      = ["Host"]
 
       cookies {
         forward = "none"
       }
+
     }
 
     dynamic "lambda_function_association" {
-      for_each = local.lambdas_cloudfront
+      for_each = aws_lambda_function.cloudfront
+
       content {
-        event_type   = lambda_function_association.value.cloudfront_event
-        lambda_arn   = aws_lambda_function.handler[lambda_function_association.key].qualified_arn
+        event_type   = "origin-request"
+        lambda_arn   = each.value.qualified_arn
         include_body = true
       }
     }
