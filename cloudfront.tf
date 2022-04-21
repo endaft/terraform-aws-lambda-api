@@ -12,7 +12,7 @@ resource "aws_cloudfront_distribution" "app" {
   default_root_object = "index.html"
   price_class         = "PriceClass_All"
   comment             = "The public access point for ${local.web_app_domain}"
-  aliases             = [local.app_domain, local.web_app_domain]
+  aliases             = concat([local.app_domain, local.web_app_domain], local.web_app_cnames)
 
   logging_config {
     include_cookies = false

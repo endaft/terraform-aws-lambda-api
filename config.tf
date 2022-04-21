@@ -53,6 +53,7 @@ locals {
     lambda_exec = "${local.app_slug}-${local.env_prefix}lambda-exec"
   }
   idp_names      = [for idp in var.identity_providers : idp.name]
+  web_app_cnames = [for app, dirPath in local.web_apps : "${app}.${local.app_domain}"]
   web_apps_count = length(keys(local.web_apps))
   web_apps_files = { for obj in tolist(flatten([for app, dirPath in local.web_apps :
     tolist([for f in fileset(dirPath, "**") : {
