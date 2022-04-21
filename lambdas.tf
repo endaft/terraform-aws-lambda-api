@@ -33,6 +33,7 @@ resource "aws_lambda_function" "cloudfront" {
   filename         = "lambda-gateway.zip"
   handler          = "index.handler"
   function_name    = "${local.app_slug}-${local.env_prefix}cf-subdom-router"
+  source_code_hash = "${timestamp()}"
 
   role    = aws_iam_role.lambda_exec_role.arn
   publish = true
