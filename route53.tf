@@ -9,9 +9,23 @@ data "aws_route53_zone" "public" {
 resource "aws_route53_record" "sub" {
   count = local.use_subdom ? 1 : 0
 
-  type            = "A"
-  zone_id         = data.aws_route53_zone.public.zone_id
-  name            = local.app_domain
+  type    = "A"
+  zone_id = data.aws_route53_zone.public.zone_id
+  name    = local.app_domain
+
+  alias {
+    zone_id                = aws_cloudfront_distribution.app.hosted_zone_id
+    name                   = aws_cloudfront_distribution.app.domain_name
+    evaluate_target_health = false
+  }
+}
+
+resource "aws_route53_record" "web_apps" {
+  for_each = local.web_apps
+
+  type    = "A"
+  zone_id = data.aws_route53_zone.public.zone_id
+  name    = "${each.key}.${local.app_domain}"
 
   alias {
     zone_id                = aws_cloudfront_distribution.app.hosted_zone_id
