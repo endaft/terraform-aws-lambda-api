@@ -23,6 +23,10 @@ provider "aws" {
 resource "null_resource" "cloudfront_lambda_zip" {
   count = local.web_apps_count > 1 ? 1 : 0
 
+  triggers = {
+    always_run = "${timestamp()}"
+  }
+
   provisioner "local-exec" {
     command = "curl -LJO https://github.com/endaft/aws-cloudfront-gateway/raw/main/dist/lambda-gateway.zip"
   }
