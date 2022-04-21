@@ -53,11 +53,11 @@ resource "aws_cloudfront_distribution" "app" {
     }
 
     dynamic "lambda_function_association" {
-      for_each = aws_lambda_function.cloudfront
+      for_each = [aws_lambda_function.cloudfront]
 
       content {
         event_type   = "origin-request"
-        lambda_arn   = each.value.qualified_arn
+        lambda_arn   = aws_lambda_function.cloudfront[0].qualified_arn
         include_body = true
       }
     }
