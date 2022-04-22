@@ -23,6 +23,8 @@ resource "aws_cloudfront_distribution" "app" {
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
     origin_id   = local.s3w_origin_id
+    origin_path = "sites"
+
     custom_header {
       name  = "X-Base-Host"
       value = local.app_domain
@@ -41,6 +43,7 @@ resource "aws_cloudfront_distribution" "app" {
     min_ttl                = 3600
     default_ttl            = 7200
     max_ttl                = 86400
+    compress               = true
 
     forwarded_values {
       query_string = false
@@ -50,6 +53,16 @@ resource "aws_cloudfront_distribution" "app" {
         forward = "none"
       }
 
+    }
+
+    dynamic "lambda_function_association" {
+      for_each = [aws_lambda_function.cloudfront]
+
+      content {
+        event_type   = "origin-request"
+        lambda_arn   = aws_lambda_function.cloudfront[lambda_function_association.key].qualified_arn
+        include_body = true
+      }
     }
   }
 
