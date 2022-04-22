@@ -36,24 +36,17 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   default_cache_behavior {
-    allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
-    cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = local.s3w_origin_id
-    viewer_protocol_policy = "redirect-to-https"
-    min_ttl                = 3600
-    default_ttl            = 7200
-    max_ttl                = 86400
-    compress               = true
-
-    forwarded_values {
-      query_string = false
-      headers      = ["Host"]
-
-      cookies {
-        forward = "none"
-      }
-
-    }
+    allowed_methods            = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods             = ["GET", "HEAD"]
+    target_origin_id           = local.s3w_origin_id
+    viewer_protocol_policy     = "redirect-to-https"
+    min_ttl                    = 3600
+    default_ttl                = 7200
+    max_ttl                    = 86400
+    compress                   = true
+    cache_policy_id            = "Managed-CachingOptimized"
+    origin_request_policy_id   = "Managed-AllViewer"
+    response_headers_policy_id = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
 
     dynamic "lambda_function_association" {
       for_each = [aws_lambda_function.cloudfront]
@@ -61,7 +54,7 @@ resource "aws_cloudfront_distribution" "app" {
       content {
         event_type   = "origin-request"
         lambda_arn   = aws_lambda_function.cloudfront[lambda_function_association.key].qualified_arn
-        include_body = true
+        include_body = false
       }
     }
   }
