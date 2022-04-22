@@ -23,7 +23,7 @@ resource "aws_cloudfront_distribution" "app" {
   origin {
     domain_name = aws_s3_bucket.app.bucket_regional_domain_name
     origin_id   = local.s3w_origin_id
-    origin_path = "sites"
+    origin_path = "/sites"
 
     custom_header {
       name  = "X-Base-Host"
