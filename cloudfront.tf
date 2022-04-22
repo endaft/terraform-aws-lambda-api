@@ -11,7 +11,7 @@ data "aws_cloudfront_cache_policy" "app" {
 }
 
 data "aws_cloudfront_origin_request_policy" "app" {
-  name = "Managed-CORS-S3Origin"
+  name = "Managed-AllViewer"
 }
 
 data "aws_cloudfront_response_headers_policy" "app" {
