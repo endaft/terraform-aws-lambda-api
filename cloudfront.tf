@@ -6,6 +6,18 @@ resource "aws_cloudfront_origin_access_identity" "app" {
   comment = "The origin access identity for ${local.web_app_domain}"
 }
 
+data "aws_cloudfront_cache_policy" "app" {
+  name = "Managed-CachingOptimized"
+}
+
+data "aws_cloudfront_origin_request_policy" "app" {
+  name = "Managed-AllViewer"
+}
+
+data "aws_cloudfront_response_headers_policy" "app" {
+  name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
+}
+
 resource "aws_cloudfront_distribution" "app" {
   enabled             = true
   is_ipv6_enabled     = true
@@ -44,9 +56,9 @@ resource "aws_cloudfront_distribution" "app" {
     default_ttl                = 7200
     max_ttl                    = 86400
     compress                   = true
-    cache_policy_id            = "Managed-CachingOptimized"
-    origin_request_policy_id   = "Managed-AllViewer"
-    response_headers_policy_id = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
+    cache_policy_id            = data.aws_cloudfront_cache_policy.app.id
+    origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.app.id
+    response_headers_policy_id = data.aws_cloudfront_response_headers_policy.app.id
 
     dynamic "lambda_function_association" {
       for_each = [aws_lambda_function.cloudfront]
