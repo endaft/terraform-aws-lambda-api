@@ -18,6 +18,43 @@ data "aws_cloudfront_response_headers_policy" "app" {
   name = "Managed-CORS-with-preflight-and-SecurityHeadersPolicy"
 }
 
+resource "aws_cloudfront_origin_request_policy" "app" {
+  name    = "${local.app_slug}-${local.env_prefix}RequestPolicy"
+  comment = "Origin request policy for ${local.app_domain}"
+  cookies_config {
+    cookie_behavior = "all"
+  }
+  headers_config {
+    header_behavior = "allViewer"
+  }
+  query_strings_config {
+    query_string_behavior = "all"
+  }
+}
+
+resource "aws_cloudfront_cache_policy" "app" {
+  name        = "${local.app_slug}-${local.env_prefix}CachePolicy"
+  comment     = "Cache policy for ${local.app_domain}"
+  default_ttl = data.aws_cloudfront_cache_policy.app.default_ttl
+  max_ttl     = data.aws_cloudfront_cache_policy.app.max_ttl
+  min_ttl     = data.aws_cloudfront_cache_policy.app.min_ttl
+
+  parameters_in_cache_key_and_forwarded_to_origin {
+    cookies_config {
+      cookie_behavior = "none"
+    }
+    query_strings_config {
+      query_string_behavior = "none"
+    }
+    headers_config {
+      header_behavior = "whitelist"
+      headers {
+        items = ["X-Target-Domain"]
+      }
+    }
+  }
+}
+
 resource "aws_cloudfront_distribution" "app" {
   enabled             = true
   is_ipv6_enabled     = true
@@ -56,7 +93,7 @@ resource "aws_cloudfront_distribution" "app" {
     default_ttl                = 7200
     max_ttl                    = 86400
     compress                   = true
-    cache_policy_id            = data.aws_cloudfront_cache_policy.app.id
+    cache_policy_id            = aws_cloudfront_cache_policy.app.id
     origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.app.id
     response_headers_policy_id = data.aws_cloudfront_response_headers_policy.app.id
 
