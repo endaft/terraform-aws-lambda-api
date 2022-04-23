@@ -49,7 +49,7 @@ resource "aws_cloudfront_cache_policy" "app" {
     headers_config {
       header_behavior = "whitelist"
       headers {
-        items = ["X-Target-Domain"]
+        items = ["Host"]
       }
     }
   }
