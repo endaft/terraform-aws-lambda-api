@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "lambda_arp_doc" {
 }
 
 resource "aws_iam_policy" "lambda_logging" {
-  name_prefix = "lambda_logging"
+  name_prefix = "lambda_logging_"
   path        = "/"
   description = "IAM policy for logging from a lambda"
   policy      = data.aws_iam_policy_document.lambda_logging.json
