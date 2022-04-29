@@ -53,12 +53,18 @@ locals {
     lambda_exec = "${local.app_slug}-${local.env_prefix}lambda-exec"
   }
   idp_names      = [for idp in var.identity_providers : idp.name]
-  web_app_cnames = [for app, dirPath in local.web_apps : "${app}.${local.app_domain}"]
+  web_app_cnames = [for app, target in local.web_apps : "${app}.${local.app_domain}"]
+  web_app_origins = { for app in
+    compact([for app, target in local.web_apps :
+    can(regex("^lambda://(.*)$", target)) ? app : ""]) :
+    app => tolist(lookup(var.lambda_configs, regex("^lambda://(.*)$", lookup(local.web_apps, app))[0]).routes)[0].path
+  }
   web_apps_count = length(keys(local.web_apps))
-  web_apps_files = { for obj in tolist(flatten([for app, dirPath in local.web_apps :
-    tolist([for f in fileset(dirPath, "**") : {
+  web_apps_files = { for obj in tolist(flatten([for app, target in local.web_apps :
+    lookup(local.web_app_origins, app, null) != null ? [] :
+    tolist([for f in fileset(target, "**") : {
       target = local.web_apps_count > 1 ? "${app}/${f}" : f
-      source = "${dirPath}/${f}"
+      source = "${target}/${f}"
     }])
   ])) : obj.target => obj.source }
   lambda_routes = { for obj in

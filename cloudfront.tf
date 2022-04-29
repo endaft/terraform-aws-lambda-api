@@ -79,6 +79,15 @@ resource "aws_cloudfront_distribution" "app" {
       value = local.app_domain
     }
 
+    dynamic "custom_header" {
+      for_each = local.web_app_origins
+
+      content {
+        name  = "X-Origin-${upper(custom_header.key)}"
+        value = "${trimsuffix(aws_apigatewayv2_stage.app.invoke_url, "/")}/${trimprefix(custom_header.value, "/")}"
+      }
+    }
+
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.app.cloudfront_access_identity_path
     }
