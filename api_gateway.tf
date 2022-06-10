@@ -69,7 +69,7 @@ resource "aws_apigatewayv2_integration" "app" {
   integration_type   = "AWS_PROXY"
   integration_method = "POST"
   request_parameters = merge(var.request_params, { for k, v in coalesce(each.value.environment, {}) :
-    "X-Env-${k}" => contains(local.token_keys, v) ? coalesce(local.token_map[v], v) : v
+    "append:header.X-Env-${k}" => contains(local.token_keys, v) ? coalesce(local.token_map[v], v) : v
   })
 
   depends_on = [
