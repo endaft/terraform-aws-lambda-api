@@ -85,7 +85,9 @@ locals {
   lambda_endpoints   = { for key in compact([for k, l in var.lambda_configs : length(l.routes) > 0 ? k : ""]) : key => lookup(var.lambda_configs, key) }
   lambda_routes_anon = { for key in compact([for k, l in local.lambda_routes : l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
   lambda_routes_auth = { for key in compact([for k, l in local.lambda_routes : !l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
-  token_map          = var.token_map
+  token_map          = merge({
+    "ROOT_DOMAIN" = local.app_domain
+  }, var.token_map)
   token_keys         = keys(local.token_map)
   mime_map = {
     "aac"    = "audio/aac"
