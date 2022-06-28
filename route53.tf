@@ -20,6 +20,20 @@ resource "aws_route53_record" "sub" {
   }
 }
 
+resource "aws_route53_record" "root" {
+  count = local.use_subdom ? 0 : 1
+
+  type    = "A"
+  zone_id = data.aws_route53_zone.public.zone_id
+  name    = local.app_domain
+
+  alias {
+    zone_id                = aws_cloudfront_distribution.app.hosted_zone_id
+    name                   = aws_cloudfront_distribution.app.domain_name
+    evaluate_target_health = false
+  }
+}
+
 resource "aws_route53_record" "web_apps" {
   for_each = local.web_apps
 
