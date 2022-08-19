@@ -23,7 +23,6 @@ data "aws_iam_policy_document" "lambda_arp_doc" {
     principals {
       type = "Service"
       identifiers = [
-        "replicator.lambda.amazonaws.com",
         "lambda.amazonaws.com",
         "edgelambda.amazonaws.com",
         "events.amazonaws.com",

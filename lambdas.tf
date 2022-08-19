@@ -40,6 +40,5 @@ resource "aws_lambda_function" "cloudfront" {
 
   depends_on = [
     null_resource.cloudfront_lambda_zip,
-    aws_cloudwatch_log_group.cloudfront_lambda
   ]
 }

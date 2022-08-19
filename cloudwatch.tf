@@ -13,8 +13,3 @@ resource "aws_cloudwatch_log_group" "api_gateway" {
   name              = "/aws/api_gw/${aws_apigatewayv2_api.app.name}"
   retention_in_days = var.log_retention_days
 }
-
-resource "aws_cloudwatch_log_group" "cloudfront_lambda" {
-  name              = "/aws/lambda/${local.lambdas_cloudfront_name}"
-  retention_in_days = var.log_retention_days
-}
