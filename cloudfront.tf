@@ -84,7 +84,7 @@ resource "aws_cloudfront_distribution" "app" {
 
       content {
         name  = "X-Origin-${upper(custom_header.key)}"
-        value = "${local.api_domain}/${trimprefix(custom_header.value, "/")}"
+        value = "https://${local.api_domain}/${trimprefix(custom_header.value, "/")}"
       }
     }
 
