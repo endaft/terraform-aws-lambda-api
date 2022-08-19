@@ -84,7 +84,7 @@ resource "aws_cloudfront_distribution" "app" {
 
       content {
         name  = "X-Origin-${upper(custom_header.key)}"
-        value = "${trimsuffix(aws_apigatewayv2_stage.app.invoke_url, "/")}/${trimprefix(custom_header.value, "/")}"
+        value = "${local.api_domain}/${trimprefix(custom_header.value, "/")}"
       }
     }
 
