@@ -8,7 +8,7 @@ resource "aws_iam_role" "lambda_exec_role" {
   managed_policy_arns = [
     "arn:aws:iam::aws:policy/AWSLambdaExecute",
     "arn:aws:iam::aws:policy/AmazonS3FullAccess",
-    "arn:aws:iam::aws:policy/CloudWatchEventsFullAccess",
+    "arn:aws:iam::aws:policy/CloudWatchFullAccess",
     "arn:aws:iam::aws:policy/CloudFrontFullAccess",
   ]
 }
@@ -30,25 +30,4 @@ data "aws_iam_policy_document" "lambda_arp_doc" {
       ]
     }
   }
-}
-
-resource "aws_iam_policy" "lambda_logging" {
-  name_prefix = "lambda_logging_"
-  path        = "/"
-  description = "IAM policy for logging from a lambda"
-  policy      = data.aws_iam_policy_document.lambda_logging.json
-}
-
-data "aws_iam_policy_document" "lambda_logging" {
-  version = "2012-10-17"
-  statement {
-    effect    = "Allow"
-    resources = ["arn:aws:logs:*:*:*"]
-    actions   = ["logs:*"]
-  }
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_logs" {
-  role       = aws_iam_role.lambda_exec_role.name
-  policy_arn = aws_iam_policy.lambda_logging.arn
 }
