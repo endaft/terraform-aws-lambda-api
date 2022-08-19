@@ -81,14 +81,15 @@ locals {
       ])
     ) : obj.key => obj
   }
-  lambdas_cloudfront = { for key in compact([for k, l in var.lambda_configs : l.cloudfront_event != "" ? k : ""]) : key => lookup(var.lambda_configs, key) }
-  lambda_endpoints   = { for key in compact([for k, l in var.lambda_configs : length(l.routes) > 0 ? k : ""]) : key => lookup(var.lambda_configs, key) }
-  lambda_routes_anon = { for key in compact([for k, l in local.lambda_routes : l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
-  lambda_routes_auth = { for key in compact([for k, l in local.lambda_routes : !l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
-  token_map          = merge({
+  lambdas_cloudfront_name = "${local.app_slug}-${local.env_prefix}cf-subdom-router"
+  lambdas_cloudfront      = { for key in compact([for k, l in var.lambda_configs : l.cloudfront_event != "" ? k : ""]) : key => lookup(var.lambda_configs, key) }
+  lambda_endpoints        = { for key in compact([for k, l in var.lambda_configs : length(l.routes) > 0 ? k : ""]) : key => lookup(var.lambda_configs, key) }
+  lambda_routes_anon      = { for key in compact([for k, l in local.lambda_routes : l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
+  lambda_routes_auth      = { for key in compact([for k, l in local.lambda_routes : !l.anon ? k : ""]) : key => lookup(local.lambda_routes, key) }
+  token_map = merge({
     "ROOT_DOMAIN" = local.app_domain
   }, var.token_map)
-  token_keys         = keys(local.token_map)
+  token_keys = keys(local.token_map)
   mime_map = {
     "aac"    = "audio/aac"
     "abw"    = "application/x-abiword"

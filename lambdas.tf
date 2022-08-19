@@ -32,14 +32,14 @@ resource "aws_lambda_function" "cloudfront" {
   timeout          = 30
   filename         = "lambda-gateway.zip"
   handler          = "index.handler"
-  function_name    = "${local.app_slug}-${local.env_prefix}cf-subdom-router"
-  source_code_hash = "${timestamp()}"
+  function_name    = local.lambdas_cloudfront_name
+  source_code_hash = timestamp()
 
   role    = aws_iam_role.lambda_exec_role.arn
   publish = true
 
   depends_on = [
-    aws_cloudwatch_log_group.lambda_logs,
-    null_resource.cloudfront_lambda_zip
+    null_resource.cloudfront_lambda_zip,
+    aws_cloudwatch_log_group.cloudfront_lambda
   ]
 }
