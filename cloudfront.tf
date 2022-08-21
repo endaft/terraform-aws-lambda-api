@@ -84,12 +84,47 @@ resource "aws_cloudfront_distribution" "app" {
 
       content {
         name  = "X-Origin-${upper(custom_header.key)}"
-        value = "https://${local.api_domain}/${trimprefix(custom_header.value, "/")}"
+        value = custom_header.value
       }
     }
 
     s3_origin_config {
       origin_access_identity = aws_cloudfront_origin_access_identity.app.cloudfront_access_identity_path
+    }
+  }
+
+  dynamic "origin" {
+    for_each = local.web_app_origins
+    content {
+      domain_name            = regex("^.*//([^:/]*).*$", origin.value)[0]
+      origin_id              = "${origin.key}-origin"
+
+      custom_header {
+        name  = "X-Base-Host"
+        value = local.app_domain
+      }
+    }
+  }
+
+  dynamic "origin_group" {
+    for_each = length(local.web_app_origins) > 0 ? [true] : []
+    content {
+      origin_id = "S3LambdaFailover"
+
+      failover_criteria {
+        status_codes = [403, 404, 500, 502]
+      }
+
+      member {
+        origin_id = local.s3w_origin_id
+      }
+
+      dynamic "member" {
+        for_each = local.web_app_origins
+        content {
+          origin_id = "${member.key}-origin"
+        }
+      }
     }
   }
 

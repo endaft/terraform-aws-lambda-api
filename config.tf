@@ -52,21 +52,43 @@ locals {
   roles = {
     lambda_exec = "${local.app_slug}-${local.env_prefix}lambda-exec"
   }
+  regex_origin   = "^lambda://([^+\n]*)+?(.*)?$"
   idp_names      = [for idp in var.identity_providers : idp.name]
   web_app_cnames = [for app, target in local.web_apps : "${app}.${local.app_domain}"]
   web_app_origins = { for app in
-    compact([for app, target in local.web_apps :
-    can(regex("^lambda://(.*)$", target)) ? app : ""]) :
-    app => tolist(lookup(var.lambda_configs, regex("^lambda://(.*)$", lookup(local.web_apps, app))[0]).routes)[0].path
+    compact(
+      [for app, target in local.web_apps :
+        can(regex(local.regex_origin, target)) ? app : ""
+      ]
+    ) :
+    app => "https://${local.api_domain}/${trimprefix(tolist(
+      lookup(
+        var.lambda_configs,
+        regex(
+          local.regex_origin,
+          lookup(local.web_apps, app)
+        )[0]
+      ).routes
+    )[0].path, "/")}"
+  }
+  web_app_origin_plus = { for app in
+    compact(
+      [for app, target in local.web_apps :
+        length(regexall(local.regex_origin, target)) > 1 ? app : ""
+      ]
+    ) :
+    app => regex(local.regex_origin, lookup(local.web_apps, app))[1]
   }
   web_apps_count = length(keys(local.web_apps))
-  web_apps_files = { for obj in tolist(flatten([for app, target in local.web_apps :
-    lookup(local.web_app_origins, app, null) != null ? [] :
-    tolist([for f in fileset(target, "**") : {
-      target = local.web_apps_count > 1 ? "${app}/${f}" : f
-      source = "${target}/${f}"
-    }])
-  ])) : obj.target => obj.source }
+  web_apps_files = { for obj in tolist(
+    flatten([for app, target in merge(local.web_apps, local.web_app_origin_plus) :
+      lookup(local.web_app_origins, app, null) != null ? [] :
+        tolist([for f in fileset(target, "**") : {
+          target = local.web_apps_count > 1 ? "${app}/${f}" : f
+          source = "${target}/${f}"
+        }])
+    ])
+  ) : obj.target => obj.source }
   lambda_routes = { for obj in
     flatten(
       flatten([for key, lambda in var.lambda_configs :
