@@ -96,8 +96,15 @@ resource "aws_cloudfront_distribution" "app" {
   dynamic "origin" {
     for_each = local.web_app_origins
     content {
-      domain_name            = regex("^.*//([^:/]*).*$", origin.value)[0]
-      origin_id              = "${origin.key}-origin"
+      domain_name = regex("^.*//([^:/]*).*$", origin.value)[0]
+      origin_id   = "${origin.key}-origin"
+
+      custom_origin_config {
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = "TLSv1.2"
+        https_port             = 443
+        http_port              = 80
+      }
 
       custom_header {
         name  = "X-Base-Host"
