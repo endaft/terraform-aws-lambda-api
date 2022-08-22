@@ -94,9 +94,10 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "origin" {
-    for_each = local.web_app_origins
+    for_each = local.web_app_origin_groups
+
     content {
-      domain_name = regex("^.*//([^:/]*).*$", origin.value)[0]
+      domain_name = regex("^.*//([^:/]*).*$", origin.value.lambda)[0]
       origin_id   = "${origin.key}-origin"
 
       custom_origin_config {
@@ -114,9 +115,10 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "origin_group" {
-    for_each = length(local.web_app_origins) > 0 ? [true] : []
+    for_each = local.web_app_origin_groups
+
     content {
-      origin_id = "S3LambdaFailover"
+      origin_id = "${origin_group.key}-S3LambdaFailover"
 
       failover_criteria {
         status_codes = [403, 404, 500, 502]
@@ -126,11 +128,8 @@ resource "aws_cloudfront_distribution" "app" {
         origin_id = local.s3w_origin_id
       }
 
-      dynamic "member" {
-        for_each = local.web_app_origins
-        content {
-          origin_id = "${member.key}-origin"
-        }
+      member {
+        origin_id = "${origin_group.key}-origin"
       }
     }
   }

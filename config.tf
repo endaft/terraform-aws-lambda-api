@@ -79,6 +79,12 @@ locals {
     ) :
     app => regex(local.regex_origin, lookup(local.web_apps, app))[1]
   }
+  web_app_origin_groups = { for app in local.web_app_origin_plus:
+    app => {
+      lambda = lookup(local.web_app_origins, app)
+      fileset = lookup(local.web_app_origin_plus, app)
+    }
+  }
   web_apps_count = length(keys(local.web_apps))
   web_apps_files = { for obj in tolist(
     flatten([for app, target in merge(local.web_apps, local.web_app_origin_plus) :
