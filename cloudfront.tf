@@ -97,7 +97,7 @@ resource "aws_cloudfront_distribution" "app" {
     for_each = local.web_app_origins
 
     content {
-      domain_name = regex("^.*//([^:/]*).*$", origin.value.lambda)[0]
+      domain_name = regex("^.*//([^:/]*).*$", origin.value)[0]
       origin_id   = "${origin.key}-origin"
 
       custom_origin_config {
