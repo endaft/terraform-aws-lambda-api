@@ -94,7 +94,7 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "origin" {
-    for_each = local.web_app_origin_groups
+    for_each = local.web_app_origins
 
     content {
       domain_name = regex("^.*//([^:/]*).*$", origin.value.lambda)[0]
