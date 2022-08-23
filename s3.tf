@@ -20,18 +20,6 @@ resource "aws_s3_bucket_public_access_block" "app" {
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_website_configuration" "app" {
-  bucket = aws_s3_bucket.app.bucket
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "error.html"
-  }
-}
-
 resource "aws_s3_object" "app_files" {
   for_each     = local.web_apps_files
   key          = "sites/${each.key}"
