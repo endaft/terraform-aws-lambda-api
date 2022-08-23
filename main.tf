@@ -21,7 +21,10 @@ provider "aws" {
 }
 
 data "external" "lambda_hash" {
-  program = ["curl -s -H \"Accept: application/vnd.github+json\" https://api.github.com/repos/endaft/aws-cloudfront-gateway/contents/dist | jq '.[0] | { sha: .sha }'"]
+  program = [
+    "curl", "-s", "-H \"Accept: application/vnd.github+json\"", "https://api.github.com/repos/endaft/aws-cloudfront-gateway/contents/dist",
+    "|", "jq", "'.[0] | { sha: .sha }'"
+  ]
 }
 
 resource "null_resource" "cloudfront_lambda_zip" {
