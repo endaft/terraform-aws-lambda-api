@@ -139,9 +139,6 @@ resource "aws_cloudfront_distribution" "app" {
     cached_methods             = ["GET", "HEAD"]
     target_origin_id           = local.s3w_origin_id
     viewer_protocol_policy     = "redirect-to-https"
-    min_ttl                    = 3600
-    default_ttl                = 7200
-    max_ttl                    = 86400
     compress                   = true
     cache_policy_id            = aws_cloudfront_cache_policy.app.id
     origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.app.id

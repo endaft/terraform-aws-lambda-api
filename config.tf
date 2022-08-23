@@ -79,7 +79,7 @@ locals {
     ) :
     app => regex(local.regex_origin, lookup(local.web_apps, app))[1]
   })
-  web_app_origin_groups = tomap({ for app in merge(local.web_app_origins, local.web_app_origin_plus):
+  web_app_origin_groups = tomap({ for app in keys(merge(local.web_app_origins, local.web_app_origin_plus)):
     app => {
       lambda = lookup(local.web_app_origins, app, null)
       fileset = lookup(local.web_app_origin_plus, app, null)
