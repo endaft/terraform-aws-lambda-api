@@ -115,10 +115,10 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   dynamic "origin_group" {
-    for_each = local.web_app_origin_groups
+    for_each = [length(local.web_app_origin_groups) > 0 ? 1 : 0]
 
     content {
-      origin_id = "${origin_group.key}-S3LambdaFailover"
+      origin_id = "S3OriginFailover"
 
       failover_criteria {
         status_codes = [403, 404, 500, 502]
@@ -128,8 +128,11 @@ resource "aws_cloudfront_distribution" "app" {
         origin_id = local.s3w_origin_id
       }
 
-      member {
-        origin_id = "${origin_group.key}-origin"
+      dynamic "member" {
+        for_each = local.web_app_origin_groups
+        content {
+          origin_id = "${member.key}-origin"
+        }
       }
     }
   }
@@ -137,7 +140,7 @@ resource "aws_cloudfront_distribution" "app" {
   default_cache_behavior {
     allowed_methods            = ["GET", "HEAD", "OPTIONS"]
     cached_methods             = ["GET", "HEAD"]
-    target_origin_id           = local.s3w_origin_id
+    target_origin_id           = length(local.web_app_origin_groups) > 0 ? "S3OriginFailover" : local.s3w_origin_id
     viewer_protocol_policy     = "redirect-to-https"
     compress                   = true
     cache_policy_id            = aws_cloudfront_cache_policy.app.id
