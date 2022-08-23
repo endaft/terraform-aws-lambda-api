@@ -20,14 +20,22 @@ provider "aws" {
   }
 }
 
+data "external" "lambda_hash" {
+  program = ["curl -s -H \"Accept: application/vnd.github+json\" https://api.github.com/repos/endaft/aws-cloudfront-gateway/contents/dist | jq '.[0] | { sha: .sha }'"]
+}
+
 resource "null_resource" "cloudfront_lambda_zip" {
   count = local.web_apps_count > 1 ? 1 : 0
 
   triggers = {
-    always_run = "${timestamp()}"
+    lambda_hash = data.external.lambda_hash
   }
 
   provisioner "local-exec" {
     command = "curl -LJO https://github.com/endaft/aws-cloudfront-gateway/raw/dev/dist/lambda-gateway.zip"
   }
+
+  depends_on = [
+    data.external.lambda_hash
+  ]
 }
