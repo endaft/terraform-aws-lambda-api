@@ -44,6 +44,7 @@ resource "aws_apigatewayv2_stage" "app" {
       identityUserAgent       = "$context.identity.userAgent"
       integrationErrorMessage = "$context.integrationErrorMessage"
       integrationStatus       = "$context.integration.status"
+      path                    = "$context.path"
       protocol                = "$context.protocol"
       requestId               = "$context.requestId"
       requestTime             = "$context.requestTime"
