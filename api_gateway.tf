@@ -39,6 +39,9 @@ resource "aws_apigatewayv2_stage" "app" {
     format = jsonencode({
       errorMessage            = "$context.error.message"
       httpMethod              = "$context.httpMethod"
+      identityCaller          = "$context.identity.caller"
+      identityUser            = "$context.identity.user"
+      identityUserAgent       = "$context.identity.userAgent"
       integrationErrorMessage = "$context.integrationErrorMessage"
       integrationStatus       = "$context.integration.status"
       protocol                = "$context.protocol"
