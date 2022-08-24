@@ -17,7 +17,7 @@ resource "aws_s3_bucket_public_access_block" "app" {
   block_public_acls       = true
   block_public_policy     = true
   ignore_public_acls      = true
-  restrict_public_buckets = false
+  restrict_public_buckets = true
 }
 
 resource "aws_s3_object" "app_files" {
@@ -36,25 +36,11 @@ resource "aws_s3_bucket_policy" "app" {
 
 data "aws_iam_policy_document" "s3_app_policy_doc" {
   version = "2008-10-17"
-
   statement {
     effect    = "Allow"
-    sid       = "AllowPublicVisible"
-    actions   = ["s3:ListBucket"]
-    resources = [aws_s3_bucket.app.arn]
-
-    principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.app.iam_arn]
-    }
-  }
-
-  statement {
-    effect    = "Allow"
-    sid       = "AllowPublicRead"
+    sid       = "CloudFrontPrivateAccess"
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.app.arn}/*"]
-
     principals {
       type        = "AWS"
       identifiers = [aws_cloudfront_origin_access_identity.app.iam_arn]

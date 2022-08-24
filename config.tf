@@ -52,7 +52,7 @@ locals {
   roles = {
     lambda_exec = "${local.app_slug}-${local.env_prefix}lambda-exec"
   }
-  regex_origin   = "^lambda://([^+\n]*)+?(.*)?$"
+  regex_origin   = "^lambda://([^+\n]*)\\+?(.*)?$"
   idp_names      = [for idp in var.identity_providers : idp.name]
   web_app_cnames = [for app, target in local.web_apps : "${app}.${local.app_domain}"]
   web_app_origins = tomap({ for app in
@@ -71,28 +71,25 @@ locals {
       ).routes
     )[0].path, "/")}"
   })
-  web_app_origin_plus = tomap({ for app in
-    compact(
-      [for app, target in local.web_apps :
-        length(regexall(local.regex_origin, target)) > 1 ? app : ""
-      ]
-    ) :
-    app => regex(local.regex_origin, lookup(local.web_apps, app))[1]
+  web_app_origin_plus = tomap({ for app in keys(local.web_apps) :
+    app => length(distinct(concat(compact(flatten(regexall(local.regex_origin, lookup(local.web_apps, app)))), [null, null]))) >= 2 ?
+    distinct(concat(compact(flatten(regexall(local.regex_origin, lookup(local.web_apps, app)))), [null, null]))[1] : lookup(local.web_apps, app)
   })
-  web_app_origin_groups = tomap({ for app in keys(merge(local.web_app_origins, local.web_app_origin_plus)):
+  web_app_origin_groups = tomap({ for app in keys(local.web_app_origins) :
     app => {
-      lambda = lookup(local.web_app_origins, app, null)
+      lambda  = lookup(local.web_app_origins, app, null)
       fileset = lookup(local.web_app_origin_plus, app, null)
     }
   })
-  web_apps_count = length(keys(local.web_apps))
+  web_apps_count       = length(keys(local.web_apps))
+  web_app_file_sources = merge(local.web_apps, local.web_app_origin_plus)
   web_apps_files = { for obj in tolist(
-    flatten([for app, target in merge(local.web_apps, local.web_app_origin_plus) :
-      lookup(local.web_app_origins, app, null) != null ? [] :
-        tolist([for f in fileset(target, "**") : {
-          target = local.web_apps_count > 1 ? "${app}/${f}" : f
-          source = "${target}/${f}"
-        }])
+    flatten([for app, target in local.web_app_file_sources :
+      target == null ? [] :
+      tolist([for f in fileset(target, "**") : {
+        target = local.web_apps_count > 1 ? "${app}/${f}" : f
+        source = "${target}/${f}"
+      }])
     ])
   ) : obj.target => obj.source }
   lambda_routes = { for obj in

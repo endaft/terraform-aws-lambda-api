@@ -33,7 +33,7 @@ resource "aws_lambda_function" "cloudfront" {
   filename         = "lambda-gateway.zip"
   handler          = "index.handler"
   function_name    = local.lambdas_cloudfront_name
-  source_code_hash = timestamp()
+  source_code_hash = data.external.lambda_hash.result.sha
 
   role    = aws_iam_role.lambda_exec_role.arn
   publish = true

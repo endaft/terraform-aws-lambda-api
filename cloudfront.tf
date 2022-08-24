@@ -62,6 +62,7 @@ resource "aws_cloudfront_distribution" "app" {
   price_class         = "PriceClass_All"
   comment             = "The public access point for ${local.web_app_domain}"
   aliases             = concat([local.app_domain, local.web_app_domain], local.web_app_cnames)
+  http_version        = "http2and3"
 
   logging_config {
     include_cookies = false
@@ -99,6 +100,7 @@ resource "aws_cloudfront_distribution" "app" {
     content {
       domain_name = regex("^.*//([^:/]*).*$", origin.value)[0]
       origin_id   = "${origin.key}-origin"
+      origin_path = trimsuffix(regex("^.*//[^:/]+:?(/[^{]*).*$", "https://api.dev.cirquevida.com/content/{path+}")[0], "/")
 
       custom_origin_config {
         origin_protocol_policy = "https-only"
