@@ -26,7 +26,7 @@ resource "aws_lambda_function" "handler" {
 resource "aws_lambda_function" "cloudfront" {
   count = local.web_apps_count > 1 ? 1 : 0
 
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs16.x"
   description      = "The CloudFront subdomain routing lambda."
   memory_size      = "128"
   timeout          = 30
