@@ -62,6 +62,7 @@ resource "aws_cloudfront_distribution" "app" {
   price_class         = "PriceClass_All"
   comment             = "The public access point for ${local.web_app_domain}"
   aliases             = concat([local.app_domain, local.web_app_domain], local.web_app_cnames)
+  http_version        = "http2and3"
 
   logging_config {
     include_cookies = false
@@ -84,7 +85,7 @@ resource "aws_cloudfront_distribution" "app" {
 
       content {
         name  = "X-Origin-${upper(custom_header.key)}"
-        value = "https://${local.api_domain}/${trimprefix(custom_header.value, "/")}"
+        value = custom_header.value
       }
     }
 
@@ -93,14 +94,56 @@ resource "aws_cloudfront_distribution" "app" {
     }
   }
 
+  dynamic "origin" {
+    for_each = local.web_app_origins
+
+    content {
+      domain_name = regex("^.*//([^:/]*).*$", origin.value)[0]
+      origin_id   = "${origin.key}-origin"
+      origin_path = trimsuffix(regex("^.*//[^:/]+:?(/[^{]*).*$", "https://api.dev.cirquevida.com/content/{path+}")[0], "/")
+
+      custom_origin_config {
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.1", "TLSv1.2"]
+        https_port             = 443
+        http_port              = 80
+      }
+
+      custom_header {
+        name  = "X-Base-Host"
+        value = local.app_domain
+      }
+    }
+  }
+
+  dynamic "origin_group" {
+    for_each = [length(local.web_app_origin_groups) > 0 ? 1 : 0]
+
+    content {
+      origin_id = "S3OriginFailover"
+
+      failover_criteria {
+        status_codes = [403, 404, 500, 502]
+      }
+
+      member {
+        origin_id = local.s3w_origin_id
+      }
+
+      dynamic "member" {
+        for_each = local.web_app_origin_groups
+        content {
+          origin_id = "${member.key}-origin"
+        }
+      }
+    }
+  }
+
   default_cache_behavior {
     allowed_methods            = ["GET", "HEAD", "OPTIONS"]
     cached_methods             = ["GET", "HEAD"]
-    target_origin_id           = local.s3w_origin_id
+    target_origin_id           = length(local.web_app_origin_groups) > 0 ? "S3OriginFailover" : local.s3w_origin_id
     viewer_protocol_policy     = "redirect-to-https"
-    min_ttl                    = 3600
-    default_ttl                = 7200
-    max_ttl                    = 86400
     compress                   = true
     cache_policy_id            = aws_cloudfront_cache_policy.app.id
     origin_request_policy_id   = data.aws_cloudfront_origin_request_policy.app.id

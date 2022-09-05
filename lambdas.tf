@@ -26,14 +26,14 @@ resource "aws_lambda_function" "handler" {
 resource "aws_lambda_function" "cloudfront" {
   count = local.web_apps_count > 1 ? 1 : 0
 
-  runtime          = "nodejs14.x"
+  runtime          = "nodejs16.x"
   description      = "The CloudFront subdomain routing lambda."
   memory_size      = "128"
   timeout          = 30
   filename         = "lambda-gateway.zip"
   handler          = "index.handler"
   function_name    = local.lambdas_cloudfront_name
-  source_code_hash = timestamp()
+  source_code_hash = data.external.lambda_hash.result.sha
 
   role    = aws_iam_role.lambda_exec_role.arn
   publish = true
