@@ -32,7 +32,7 @@ resource "null_resource" "cloudfront_lambda_zip" {
   }
 
   provisioner "local-exec" {
-    command = "curl -LJO https://github.com/endaft/aws-cloudfront-gateway/raw/dev/dist/lambda-gateway.zip"
+    command = "curl -LJO https://github.com/endaft/aws-cloudfront-gateway/raw/main/dist/lambda-gateway.zip"
   }
 
   depends_on = [
