@@ -33,12 +33,8 @@ resource "aws_lambda_function" "cloudfront" {
   filename         = "lambda-gateway.zip"
   handler          = "index.handler"
   function_name    = local.lambdas_cloudfront_name
-  source_code_hash = data.external.lambda_hash.result.sha
+  source_code_hash = length(data.external.cloudfront_lambda_zip.result) > 0 ? filebase64sha256("${path.module}/lambda-gateway.zip") : "" # This make the update depend on the downloaded file hash
 
   role    = aws_iam_role.lambda_exec_role.arn
   publish = true
-
-  depends_on = [
-    null_resource.cloudfront_lambda_zip,
-  ]
 }
