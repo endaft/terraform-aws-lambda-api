@@ -28,7 +28,7 @@ resource "null_resource" "cloudfront_lambda_zip" {
   count = local.web_apps_count > 1 ? 1 : 0
 
   triggers = {
-    time_stamp = timestamp()
+    lambda_hash = data.external.lambda_hash.result.sha
   }
 
   provisioner "local-exec" {

@@ -85,7 +85,7 @@ resource "aws_cloudfront_distribution" "app" {
 
       content {
         name  = "X-Origin-${upper(custom_header.key)}"
-        value = custom_header.value
+        value = "https://${regex("^.*//([^:/]*).*$", custom_header.value)[0]}${trimsuffix(regex("^.*//[^:/]+:?(/[^{]*).*$", custom_header.value)[0], "/")}"
       }
     }
 
@@ -100,7 +100,7 @@ resource "aws_cloudfront_distribution" "app" {
     content {
       domain_name = regex("^.*//([^:/]*).*$", origin.value)[0]
       origin_id   = "${origin.key}-origin"
-      origin_path = trimsuffix(regex("^.*//[^:/]+:?(/[^{]*).*$", "https://api.dev.cirquevida.com/content/{path+}")[0], "/")
+      origin_path = trimsuffix(regex("^.*//[^:/]+:?(/[^{]*).*$", origin.value)[0], "/")
 
       custom_origin_config {
         origin_protocol_policy = "https-only"
