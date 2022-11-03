@@ -46,15 +46,21 @@ resource "aws_s3_bucket_policy" "app" {
 }
 
 data "aws_iam_policy_document" "s3_app_policy_doc" {
-  version = "2008-10-17"
+  version   = "2008-10-17"
+  policy_id = "PolicyForCloudFrontPrivateContent"
   statement {
+    sid       = "AllowCloudFrontServicePrincipal"
     effect    = "Allow"
-    sid       = "CloudFrontPrivateAccess"
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.app.arn}/*"]
     principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.app.iam_arn]
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.app.arn]
     }
   }
 }
