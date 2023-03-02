@@ -5,7 +5,8 @@
 locals {
   env             = var.env
   is_anon         = var.anonymous
-  is_prod         = (local.env == "prod" || local.env == "production")
+  prod_envs       = ["main", "prod", "production"]
+  is_prod         = contains(local.prod_envs, local.env)
   use_subdom      = !local.is_prod
   env_prefix      = (local.is_prod ? "" : "${var.env}-")
   env_subdom      = (local.is_prod ? "" : "${var.env}.")

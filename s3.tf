@@ -27,6 +27,17 @@ resource "aws_s3_object" "app_files" {
   etag         = filemd5(each.value)
   bucket       = aws_s3_bucket.app.bucket
   content_type = lookup(local.mime_map, reverse(split(".", each.value))[0], "application/octet-stream")
+
+  server_side_encryption = "AES256"
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "app" {
+  bucket = aws_s3_bucket.app.bucket
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
+  }
 }
 
 resource "aws_s3_bucket_policy" "app" {
@@ -35,15 +46,21 @@ resource "aws_s3_bucket_policy" "app" {
 }
 
 data "aws_iam_policy_document" "s3_app_policy_doc" {
-  version = "2008-10-17"
+  version   = "2008-10-17"
+  policy_id = "PolicyForCloudFrontPrivateContent"
   statement {
+    sid       = "AllowCloudFrontServicePrincipal"
     effect    = "Allow"
-    sid       = "CloudFrontPrivateAccess"
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.app.arn}/*"]
     principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.app.iam_arn]
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+    condition {
+      test     = "StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.app.arn]
     }
   }
 }

@@ -55,6 +55,14 @@ resource "aws_cloudfront_cache_policy" "app" {
   }
 }
 
+resource "aws_cloudfront_origin_access_control" "app" {
+  name                              = "${local.web_app_domain}-oac"
+  description                       = "The origin access control policy for ${local.web_app_domain}"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
 resource "aws_cloudfront_distribution" "app" {
   enabled             = true
   is_ipv6_enabled     = true
@@ -71,9 +79,10 @@ resource "aws_cloudfront_distribution" "app" {
   }
 
   origin {
-    domain_name = aws_s3_bucket.app.bucket_regional_domain_name
-    origin_id   = local.s3w_origin_id
-    origin_path = "/sites"
+    domain_name              = aws_s3_bucket.app.bucket_regional_domain_name
+    origin_id                = local.s3w_origin_id
+    origin_path              = "/sites"
+    origin_access_control_id = aws_cloudfront_origin_access_control.app.id
 
     custom_header {
       name  = "X-Base-Host"
@@ -85,12 +94,8 @@ resource "aws_cloudfront_distribution" "app" {
 
       content {
         name  = "X-Origin-${upper(custom_header.key)}"
-        value = custom_header.value
+        value = "https://${regex("^.*//([^:/]*).*$", custom_header.value)[0]}${trimsuffix(regex("^.*//[^:/]+:?(/[^{]*).*$", custom_header.value)[0], "/")}"
       }
-    }
-
-    s3_origin_config {
-      origin_access_identity = aws_cloudfront_origin_access_identity.app.cloudfront_access_identity_path
     }
   }
 
@@ -100,7 +105,7 @@ resource "aws_cloudfront_distribution" "app" {
     content {
       domain_name = regex("^.*//([^:/]*).*$", origin.value)[0]
       origin_id   = "${origin.key}-origin"
-      origin_path = trimsuffix(regex("^.*//[^:/]+:?(/[^{]*).*$", "https://api.dev.cirquevida.com/content/{path+}")[0], "/")
+      origin_path = trimsuffix(regex("^.*//[^:/]+:?(/[^{]*).*$", origin.value)[0], "/")
 
       custom_origin_config {
         origin_protocol_policy = "https-only"

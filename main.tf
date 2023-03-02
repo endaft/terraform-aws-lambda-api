@@ -20,22 +20,7 @@ provider "aws" {
   }
 }
 
-data "external" "lambda_hash" {
-  program = ["bash", "${path.module}/lambda_hash.sh"]
-}
-
-resource "null_resource" "cloudfront_lambda_zip" {
-  count = local.web_apps_count > 1 ? 1 : 0
-
-  triggers = {
-    time_stamp = timestamp()
-  }
-
-  provisioner "local-exec" {
-    command = "curl -LJO https://github.com/endaft/aws-cloudfront-gateway/raw/main/dist/lambda-gateway.zip"
-  }
-
-  depends_on = [
-    data.external.lambda_hash
-  ]
+data "external" "cloudfront_lambda_zip" {
+  program     = ["bash", "lambda.sh"]
+  working_dir = path.module
 }
